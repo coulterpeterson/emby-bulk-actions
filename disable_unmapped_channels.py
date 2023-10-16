@@ -6,7 +6,7 @@ load_dotenv()
 
 SERVER_URL = os.getenv('SERVER_URL')
 API_KEY = os.getenv('API_KEY')
-CHANNEL_EXCLUSION_SEARCH_TERMS = os.getenv('CHANNEL_EXCLUSION_SEARCH_TERMS')
+CHANNEL_EXCLUSION_SEARCH_TERMS = str(os.getenv('CHANNEL_EXCLUSION_SEARCH_TERMS')).split(',')
 
 channel_loop_index = 0
 
@@ -51,13 +51,11 @@ while len(unmapped_channels['Items']) > 0:
       name = channel['Name']
       id = channel['Id']
       management_id = channel['ManagementId']
-      disabled = False
-      if 'true' in str(channel['Disabled']).lower():
-         disabled = True
+      disabled = channel['Disabled']
       exclusion_term_detected = False
       for term in CHANNEL_EXCLUSION_SEARCH_TERMS:
           if term.lower() in name.lower():
-              exclusion_term_detected = True
+            exclusion_term_detected = True
       if not disabled and not exclusion_term_detected:
         disable_channel_query = {
           'ManagementId':management_id, 
