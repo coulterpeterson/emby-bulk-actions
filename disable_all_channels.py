@@ -10,23 +10,22 @@ CHANNEL_EXCLUSION_SEARCH_TERMS = os.getenv('CHANNEL_EXCLUSION_SEARCH_TERMS')
 
 channel_loop_index = 0
 
-# Get all unmapped channels
-get_unmapped_channels_query = {
+# Get all channels
+get_channels_query = {
   'SortBy':'DefaultChannelOrder', 
   'SortOrder':'Descending',
   'Fields':'BasicSyncInfo%2CCanDelete%2CContainer%2CPrimaryImageAspectRatio%2CProductionYear%2CStatus%2CEndDate%2CCommunityRating%2COfficialRating%2CCriticRating',
   'StartIndex':channel_loop_index,
   'EnableImageTypes':'Primary%2CBackdrop%2CThumb',
   'ImageTypeLimit':'1',
-  'ChannelMappingStatus':'Unmapped',
   'Limit':'30',
   'X-Emby-Token':API_KEY,
   'X-Emby-Language':'en-us',
   }
 
-get_unmapped_channels_response = requests.get(SERVER_URL + "/emby/LiveTv/Manage/Channels", params=get_unmapped_channels_query)
+get_channels_response = requests.get(SERVER_URL + "/emby/LiveTv/Manage/Channels", params=get_channels_query)
 
-unmapped_channels = get_unmapped_channels_response.json()
+channels = get_channels_response.json()
 
 # Example of Single Channel's Data:
 # {'Name': 'US| MAGNOLIA CHANNEL HD', 
@@ -42,11 +41,11 @@ unmapped_channels = get_unmapped_channels_response.json()
 #  }
 
 i = 0
-# Now that we have the initial count of unmapped channels, start the loop
-while len(unmapped_channels['Items']) > 0:
+# Now that we have the initial count of channels, start the loop
+while len(channels['Items']) > 0:
 
   # Disable channels
-  for channel in unmapped_channels['Items']:
+  for channel in channels['Items']:
       i += 1
       name = channel['Name']
       id = channel['Id']
@@ -68,12 +67,12 @@ while len(unmapped_channels['Items']) > 0:
         print(str(i) + " Disabled Channel: " + name + " (" + id + ")")
       else:
         print(str(i) + " Skipped Channel: " + name + " (" + id + ")")
-  # END channel in unmapped_channels['Items']:
+  # END channel in channels['Items']:
 
-  # Increment the channel_loop_index and get another batch of unmapped channels
+  # Increment the channel_loop_index and get another batch of channels
   channel_loop_index += 30
-  get_unmapped_channels_response = requests.get(SERVER_URL + "/emby/LiveTv/Manage/Channels", params=get_unmapped_channels_query)
-  unmapped_channels = get_unmapped_channels_response.json()
+  get_channels_response = requests.get(SERVER_URL + "/emby/LiveTv/Manage/Channels", params=get_channels_query)
+  channels = get_channels_response.json()
 
-# END while len(unmapped_channels['Items']) > 0:
+# END while len(channels['Items']) > 0:
 
