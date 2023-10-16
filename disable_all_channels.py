@@ -50,7 +50,8 @@ while len(channels['Items']) > 0:
       name = channel['Name']
       id = channel['Id']
       management_id = channel['ManagementId']
-      disabled = channel['Disabled']
+      if 'true' in str(channel['Disabled']).lower():
+         disabled = True
       exclusion_term_detected = False
       for term in CHANNEL_EXCLUSION_SEARCH_TERMS:
           if term.lower() in name.lower():
@@ -58,7 +59,7 @@ while len(channels['Items']) > 0:
       if not disabled and not exclusion_term_detected:
         disable_channel_query = {
           'ManagementId':management_id, 
-          'Disabled':'true',
+          'Disabled':True,
           'X-Emby-Token':API_KEY,
           'X-Emby-Language':'en-us',
           'reqformat':'json',
